@@ -13,8 +13,6 @@ class ObjectSelectorTreeview(ABC):
         self.columns = columns
         self.headings = headings if headings else columns
 
-        
-
     @abstractmethod
     def onSelect(self, event):
         pass
@@ -32,7 +30,7 @@ class ObjectSelectorTreeview(ABC):
         for i in range(3):
             scene = SlideshowScene(f"Slideshow Scene - {i}")
             self.add_scene(scene)
-            self.treeview.insert('', tk.END, values=self.item(scene), tags=[scene.tag])
+            self.treeview.insert('', tk.END, values=self.item(scene))
 
 class SceneSelectorTreeview(ObjectSelectorTreeview):
     
@@ -41,26 +39,23 @@ class SceneSelectorTreeview(ObjectSelectorTreeview):
         return self.controller.scenes
 
     def onSelect(self, event):
+        # This should never be more than once as longe as 'selectmode' is browse
         for selected_item in self.treeview.selection():
-            item = self.treeview.item(selected_item)
-            tags = item['tags']
+            index = self.treeview.index(selected_item)
 
-            scene = self.get_scene_by_tag(tag=tags[0])
+            scene = self.controller.scenes[index]
 
             print(scene)
-            
+
 
     def onDoubleClick(self, event):
         item = self.treeview.identify('item', event.x, event.y)
-        item = self.treeview.item(item)
-        if not item:
+        index = self.treeview.index(item)
+
+        if index is None:
             return
     
-        tags = item["tags"]
-        if not tags:
-            return
-        
-        scene = self.get_scene_by_tag(tag=tags[0])
+        scene = self.controller.scenes[index]
 
         print(scene)
 
@@ -79,8 +74,3 @@ class SceneSelectorTreeview(ObjectSelectorTreeview):
             raise TypeError("Can only add scenes to scene list!")
         
         self.controller.scenes.append(scene)
-
-    def get_scene_by_tag(self, tag : str) -> Optional[Scene]:
-        for scene in self.controller.scenes:
-            if str(scene.tag) == str(tag):
-                return scene

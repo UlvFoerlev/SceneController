@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
-from uuid import uuid4
 from pydantic import BaseModel
 
 class SceneType(Enum):
@@ -16,7 +15,6 @@ class Scene(ABC):
     
     def __init__(self, name : str):
         self._name = name
-        self.tag = uuid4()
 
     @property
     def name(self):
@@ -24,7 +22,7 @@ class Scene(ABC):
 
     @property
     def details(self):
-        return
+        return ""
 
 class ImageScene(Scene):
     type = SceneType.image
